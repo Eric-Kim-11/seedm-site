@@ -16,7 +16,9 @@ SeedM 릴리즈 페이지 빌드 (GitHub Actions / 로컬 공용).
 import os
 import sys
 from pathlib import Path
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+
+KST = timezone(timedelta(hours=9))   # 한국 표준시 — 연도·날짜를 항상 한국 기준으로(서버 UTC 무관)
 
 BASE = Path(__file__).parent
 sys.path.insert(0, str(BASE / "source"))
@@ -176,8 +178,9 @@ def build():
     from sheet_handler import SheetHandler
     from drive_handler import DriveHandler
 
-    now = datetime.now()
-    today = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    now = datetime.now(KST)
+    # 날짜 비교용은 naive로(시트 발매일도 naive). 표시용 now는 KST 그대로(연도·날짜 정확).
+    today = now.replace(tzinfo=None, hour=0, minute=0, second=0, microsecond=0)
 
     sh = SheetHandler(CREDENTIALS, SPREADSHEET_ID, SHEET_NAME)
     if not sh.connect():

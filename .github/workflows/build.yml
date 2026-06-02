@@ -1,6 +1,9 @@
 name: Build & Deploy SeedM Releases
 
 on:
+  # main 브랜치에 푸시(커밋 업로드)하면 자동 재빌드·재배포
+  push:
+    branches: [main]
   # 수동 실행 버튼 (Actions 탭에서 Run workflow)
   workflow_dispatch:
   # 매일 자동 (UTC 기준 → 한국시간 09:10 / 13:10 / 18:10)

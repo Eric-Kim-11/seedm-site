@@ -92,55 +92,67 @@ def render_index(today_releases, yesterday_releases, week_releases, upcoming_rel
     # 발매예정(D-7) 섹션은 사용 안 함 (eric 정책 2026-06-02) — upcoming_releases는 무시
     # 순서: 오늘(상단) → 어제(중단) → 이번주(하단). 빈 섹션은 자동 숨김(_render_section이 "" 반환).
     sections = (
-        _render_section("오늘 발매", today_releases, today)
-        + _render_section("어제 발매", yesterday_releases, today)
-        + _render_section("이번 주 발매", week_releases, today)
+        _render_section("Today", today_releases, today)
+        + _render_section("Yesterday", yesterday_releases, today)
+        + _render_section("This Week", week_releases, today)
     )
     if not sections.strip():
-        sections = '<div class="empty">최근 발매가 없습니다.</div>'
+        sections = '<div class="empty">No recent releases.</div>'
     return f"""<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="refresh" content="{auto_refresh_sec}">
-<title>SeedM Releases</title>
+<title>SeedM — New Releases</title>
 <style>
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400..800;1,400..700&display=swap');
+/* ── 색 테마 (seedm.net 홈페이지 톤에 맞춤) ──
+   배경 톤만 바꾸려면 아래 --bg 한 줄만 수정하면 전체가 따라옵니다. */
+:root{{
+  --bg:#111111;      /* 페이지 배경 — 홈페이지 배경색과 동일 */
+  --fg:#f5f5f5;      /* 기본 글자 */
+  --muted:#8a8a8a;   /* 보조 글자(아티스트·날짜·카운트) */
+  --card:#1c1c1c;    /* 앨범아트 빈자리 배경 */
+  --border:#262626;  /* 구분선 */
+  --chip:#222222;    /* 트랙수 칩 배경 */
+  --accent:#00b8ff;  /* 포인트색 — 홈페이지 시안 */
+}}
 *{{box-sizing:border-box;margin:0;padding:0;}}
-html,body{{background:#fff;color:#111;font-family:'Pretendard Variable',-apple-system,sans-serif;}}
+html,body{{background:var(--bg);color:var(--fg);font-family:'Montserrat','Pretendard Variable',-apple-system,sans-serif;}}
 body{{min-height:100vh;padding:64px 24px 80px;}}
 main{{max-width:1400px;margin:0 auto;}}
-.hero{{margin-bottom:56px;display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid #eee;padding-bottom:18px;}}
-.hero h1{{font-size:24px;font-weight:700;letter-spacing:-0.5px;}}
-.hero .date{{font-size:13px;color:#999;font-variant-numeric:tabular-nums;}}
+.hero{{margin-bottom:56px;display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--border);padding-bottom:18px;}}
+.hero h1{{font-size:24px;font-weight:800;letter-spacing:1.5px;}}
+.hero .date{{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;}}
 .section{{margin-bottom:56px;}}
 .section:last-child{{margin-bottom:0;}}
 .section-head{{display:flex;align-items:baseline;gap:10px;margin-bottom:24px;}}
-.section-head h2{{font-size:16px;font-weight:600;letter-spacing:-0.3px;}}
-.section-head .count{{font-size:12px;color:#aaa;font-variant-numeric:tabular-nums;}}
+.section-head h2{{font-size:16px;font-weight:700;letter-spacing:1px;text-transform:uppercase;}}
+.section-head .count{{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;}}
 .grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:28px 18px;}}
 .card{{display:block;text-decoration:none;color:inherit;}}
-.art{{position:relative;aspect-ratio:1;background:#f5f5f5;border-radius:6px;overflow:hidden;}}
+.art{{position:relative;aspect-ratio:1;background:var(--card);border-radius:6px;overflow:hidden;}}
 .art img{{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s ease;}}
 .card:hover .art img{{transform:scale(1.04);}}
-.art-placeholder{{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:56px;font-weight:200;color:#ccc;}}
+.art-placeholder{{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:56px;font-weight:200;color:#333;}}
 /* 호버 트랙리스트 */
-.tracklist{{position:absolute;inset:0;background:rgba(10,10,10,.82);color:#fff;opacity:0;transition:opacity .25s ease;
+.tracklist{{position:absolute;inset:0;background:rgba(0,0,0,.82);color:#fff;opacity:0;transition:opacity .25s ease;
   display:flex;align-items:center;padding:18px;pointer-events:none;backdrop-filter:blur(2px);}}
 .card:hover .tracklist{{opacity:1;}}
 .tracklist ol{{list-style:decimal inside;font-size:12px;line-height:1.9;max-height:100%;overflow:hidden;}}
-.tracklist .more{{list-style:none;color:#d4af37;margin-top:4px;}}
+.tracklist .more{{list-style:none;color:var(--accent);margin-top:4px;}}
 /* D-day 뱃지 */
-.dday{{position:absolute;top:10px;left:10px;background:#d4af37;color:#1a1400;font-size:11px;font-weight:800;
+.dday{{position:absolute;top:10px;left:10px;background:var(--accent);color:#001a24;font-size:11px;font-weight:800;
   padding:3px 8px;border-radius:6px;letter-spacing:.3px;}}
 .meta{{padding:11px 2px 0;}}
 .album{{font-size:14px;font-weight:600;margin-bottom:3px;letter-spacing:-0.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}}
-.artist{{font-size:12px;color:#666;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}}
-.date{{font-size:10px;color:#aaa;letter-spacing:.5px;font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:6px;}}
-.track-count{{background:#f0f0f0;color:#888;padding:1px 6px;border-radius:4px;font-size:10px;}}
-.empty{{grid-column:1/-1;padding:32px 0;color:#ccc;font-size:13px;}}
-footer{{margin-top:72px;border-top:1px solid #eee;padding-top:18px;font-size:11px;color:#aaa;letter-spacing:.5px;}}
+.artist{{font-size:12px;color:var(--muted);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}}
+.date{{font-size:10px;color:var(--muted);letter-spacing:.5px;font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:6px;}}
+.track-count{{background:var(--chip);color:var(--muted);padding:1px 6px;border-radius:4px;font-size:10px;}}
+.empty{{grid-column:1/-1;padding:32px 0;color:#444;font-size:13px;}}
+footer{{margin-top:72px;border-top:1px solid var(--border);padding-top:18px;font-size:11px;color:var(--muted);letter-spacing:.5px;}}
 /* 모바일 반응형 */
 @media (max-width:640px){{
   body{{padding:40px 16px 56px;}}
@@ -148,23 +160,15 @@ footer{{margin-top:72px;border-top:1px solid #eee;padding-top:18px;font-size:11p
   .hero{{margin-bottom:36px;flex-direction:column;gap:4px;}}
   .hero h1{{font-size:20px;}}
   .section{{margin-bottom:40px;}}
-  /* 터치기기: 호버 불가 → 트랙리스트는 항상 살짝 보이게 하지 않고 탭 시 노출 */
+  /* 터치기기: 호버 불가 → 탭 시 트랙리스트 노출 */
   .card:active .tracklist{{opacity:1;}}
 }}
 @media (hover:none){{ .track-count{{display:inline-block;}} }}
-@media (prefers-color-scheme:dark){{
-  html,body{{background:#0a0a0a;color:#fafafa;}}
-  .hero,footer{{border-color:#1a1a1a;}}
-  .hero .date,.artist,.date,.section-head .count{{color:#888;}}
-  .art{{background:#141414;}} .art-placeholder{{color:#2a2a2a;}}
-  .album,.section-head h2{{color:#fafafa;}} .empty{{color:#333;}}
-  .track-count{{background:#1a1a1a;color:#888;}}
-}}
 </style>
 </head>
 <body>
 <main>
-  <div class="hero"><h1>SeedM Releases</h1><div class="date">{now.strftime('%Y.%m.%d')}</div></div>
+  <div class="hero"><h1>NEW RELEASES</h1><div class="date">{now.strftime('%Y.%m.%d')}</div></div>
   {sections}
   <footer>© {now.year} SeedM Inc. All rights reserved.</footer>
 </main>

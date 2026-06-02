@@ -7,9 +7,22 @@
 import os
 import io
 import re
+import difflib
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseDownload
+
+
+def _extract_album(folder_name, date_prefix, artist):
+    """폴더명('YYYYMMDD ARTIST ALBUM 1200 [라벨]')에서 날짜·아티스트·사이즈코드를 빼고
+    앨범명 부분만 근사 추출. 유사도 매칭 비교용."""
+    s = folder_name
+    if date_prefix:
+        s = s.replace(date_prefix, " ")
+    if artist:
+        s = re.sub(re.escape(artist), " ", s, flags=re.IGNORECASE)
+    s = re.sub(r'\b\d{3,4}\b', " ", s)   # 1200/1800/3000 등 사이즈 코드 제거
+    return " ".join(s.split()).strip()
 
 
 class DriveHandler:
@@ -107,7 +120,23 @@ class DriveHandler:
                 if album_lower in folder_lower:
                     print(f"✅ 폴더 찾음 (앨범명 매칭): {folder_name}")
                     return folder['id']
-            
+
+            # 4. 유사도 매칭 (특수문자/오타 대비) — 같은 발매일+아티스트 폴더 한정, 앨범명 80%+
+            candidates = [
+                f for f in folders
+                if artist_lower in f['name'].lower()
+                and (not date_prefix or date_prefix in f['name'])
+            ]
+            best, best_ratio = None, 0.0
+            for folder in candidates:
+                cand_album = _extract_album(folder['name'], date_prefix, artist_name).lower()
+                ratio = difflib.SequenceMatcher(None, album_lower, cand_album).ratio()
+                if ratio > best_ratio:
+                    best, best_ratio = folder, ratio
+            if best and best_ratio >= 0.8:
+                print(f"✅ 폴더 찾음 (유사매칭 {best_ratio:.0%}): {best['name']}  ← 시트앨범명 '{album_name}'")
+                return best['id']
+
             print(f"❌ 폴더를 찾을 수 없음: {artist_name} - {album_name}")
             if date_prefix:
                 print(f"   (발매일: {date_prefix})")
