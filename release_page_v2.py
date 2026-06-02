@@ -131,7 +131,7 @@ main{{max-width:1400px;margin:0 auto;}}
 .section-head{{display:flex;align-items:baseline;gap:10px;margin-bottom:24px;}}
 .section-head h2{{font-size:16px;font-weight:700;letter-spacing:1px;text-transform:uppercase;}}
 .section-head .count{{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;}}
-.grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:28px 18px;}}
+.grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:32px 22px;}}  /* 앨범아트 크기: minmax 첫값(300px) 키우면 더 커지고 단수 줄어듦 */
 .card{{display:block;text-decoration:none;color:inherit;}}
 .art{{position:relative;aspect-ratio:1;background:var(--card);border-radius:6px;overflow:hidden;}}
 .art img{{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s ease;}}
