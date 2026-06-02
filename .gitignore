@@ -1,0 +1,13 @@
+# 서비스계정 키 — 절대 커밋 금지 (GitHub Secret으로만 관리)
+credentials/
+*.json
+!releases.json
+
+# 빌드 산출물 — Actions가 매번 새로 생성·배포하므로 레포에 둘 필요 없음
+website/
+
+# 파이썬
+__pycache__/
+*.pyc
+.venv/
+venv/
