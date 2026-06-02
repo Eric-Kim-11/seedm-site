@@ -124,7 +124,7 @@ html,body{{background:var(--bg);color:var(--fg);font-family:'Montserrat','Preten
 body{{min-height:100vh;padding:64px 24px 80px;}}
 main{{max-width:1400px;margin:0 auto;}}
 .hero{{margin-bottom:56px;display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--border);padding-bottom:18px;}}
-.hero h1{{font-size:24px;font-weight:800;letter-spacing:1.5px;}}
+.hero h1{{font-size:48px;font-weight:700;letter-spacing:0;}}  /* seedm.net/music PORTFOLIO와 동일(48px/700/Montserrat) */
 .hero .date{{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;}}
 .section{{margin-bottom:56px;}}
 .section:last-child{{margin-bottom:0;}}
@@ -158,7 +158,7 @@ footer{{margin-top:72px;border-top:1px solid var(--border);padding-top:18px;font
   body{{padding:40px 16px 56px;}}
   .grid{{grid-template-columns:repeat(2,1fr);gap:20px 12px;}}
   .hero{{margin-bottom:36px;flex-direction:column;gap:4px;}}
-  .hero h1{{font-size:20px;}}
+  .hero h1{{font-size:32px;}}
   .section{{margin-bottom:40px;}}
   /* 터치기기: 호버 불가 → 탭 시 트랙리스트 노출 */
   .card:active .tracklist{{opacity:1;}}
@@ -170,7 +170,6 @@ footer{{margin-top:72px;border-top:1px solid var(--border);padding-top:18px;font
 <main>
   <div class="hero"><h1>NEW RELEASES</h1><div class="date">{now.strftime('%Y.%m.%d')}</div></div>
   {sections}
-  <footer>© {now.year} SeedM Inc. All rights reserved.</footer>
 </main>
 <script>
 /* 아임웹 등 부모 페이지 iframe 높이 자동조정용: 본문 높이를 부모로 전달 */
